@@ -5,7 +5,7 @@ const AppError = require('../utils/appError');
 
 const createToken = id => {
   return jwt.sign({
-
+    id
   }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN
   })
@@ -27,7 +27,7 @@ exports.login = async (req, res, next) => {
       return next(new AppError(401, 'fail', 'Email or Password is wrong'), req, res, next);
     }
 
-    const token = createToken(user.id);
+    const token = createToken(user._id);
 
     user.password = undefined;
 
@@ -39,6 +39,7 @@ exports.login = async (req, res, next) => {
       }
     });
   } catch (error) {
+    error.statusCode = 400;
     next(error);
   }
 };
@@ -65,7 +66,7 @@ exports.signup = async (req, res, next) => {
       }
     });
   } catch(error) {
-    console.log(error.code)
+    error.statusCode = 400;
     next(error);
   }
 };
